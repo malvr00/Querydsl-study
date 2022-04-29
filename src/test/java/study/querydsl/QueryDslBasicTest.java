@@ -688,4 +688,40 @@ public class QueryDslBasicTest {
     private Predicate allEq(String usernameCond, Integer ageCond){
         return usernameEq(usernameCond).and(ageEq(ageCond));
     }
+
+    // 수정 삭제 벌크 연산
+    @Test
+    public void bulkUpdate(){
+
+        // member 1 = 10 -> 비회원
+        // member 2 = 20 -> 비회원
+        // member 3 = 30 -> 유지
+        // member 4 = 40 -> 유지
+
+        // 벌크 연산 조심해야하는점 : DB 의 상태와 영속성 컨택스트 상태가 다름
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+    }
+
+    // 기존 값 계산
+    @Test
+    public void bulkAdd(){
+        queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+    }
+
+    // 삭제
+    @Test
+    public void bulkDelete(){
+        queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+    }
+
 }
