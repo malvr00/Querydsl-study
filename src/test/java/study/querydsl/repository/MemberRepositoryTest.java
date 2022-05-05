@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberSearchCondition;
+import study.querydsl.dto.MemberTeamDto;
 import study.querydsl.entity.Member;
+import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
 
@@ -36,5 +39,34 @@ class MemberRepositoryTest {
 
         List<Member> result2 = memberRepository.findByUsername("member1");
         assertThat(result2).containsExactly(member);
+    }
+
+    @Test
+    public void searchTest() throws Exception {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("member1", 10 , teamA);
+        Member member2 = new Member("member2", 20 , teamA);
+        Member member3 = new Member("member3", 30 , teamB);
+        Member member4 = new Member("member4", 40 , teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        MemberSearchCondition memberSearchCondition = new MemberSearchCondition();
+        memberSearchCondition.setAgeGoe(35);
+        memberSearchCondition.setAgeLoe(40);
+        memberSearchCondition.setTeamName("teamB");
+
+        // when
+        List<MemberTeamDto> result = memberRepository.search(memberSearchCondition);
+
+        // then
+        assertThat(result).extracting("username").containsExactly("member4");
     }
 }
