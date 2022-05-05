@@ -26,11 +26,13 @@ import static study.querydsl.entity.QTeam.team;
 //@RequiredArgsConstructor
 public class MemberRepositoryImpl extends QuerydslRepositorySupport implements MemberRepositoryCustom {
 
-    public MemberRepositoryImpl(Class<?> domainClass) {
+    private final JPAQueryFactory queryFactory;
+
+    public MemberRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         super(Member.class);
+        queryFactory = jpaQueryFactory;
     }
 
-//    private final JPAQueryFactory queryFactory;
 
     @Override
     public List<MemberTeamDto> search(MemberSearchCondition condition) {
@@ -96,7 +98,7 @@ public class MemberRepositoryImpl extends QuerydslRepositorySupport implements M
         return new PageImpl<>(content, pageable, total);
     }
 
-    @Override
+//    @Override
     public Page<MemberTeamDto> searchPageSimple2(MemberSearchCondition condition, Pageable pageable) {
         JPQLQuery<MemberTeamDto> jpaQuery = from(member)
                 .leftJoin(member.team, team)
@@ -117,7 +119,8 @@ public class MemberRepositoryImpl extends QuerydslRepositorySupport implements M
 
         query.fetch();
 
-        return new PageImpl<>(content, pageable, total);
+//        return new PageImpl<>(content, pageable, total);
+        return null;
     }
 
 
